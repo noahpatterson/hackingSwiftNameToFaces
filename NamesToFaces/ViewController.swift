@@ -70,6 +70,24 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         dismiss(animated: true)
     }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let person = people[indexPath.item]
+        
+        let ac = UIAlertController(title: "Add name", message: "Add a name to the photo", preferredStyle: .alert)
+        ac.addTextField()
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        ac.addAction(UIAlertAction(title: "Ok", style: .default) {
+            [unowned self, ac] _ in
+            if let enteredName = ac.textFields![0].text, enteredName != "" {
+                person.name = enteredName
+                self.collectionView?.reloadData()
+            }
+        })
+        
+        present(ac, animated: true)
+        
+    }
+    
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentDirectory = paths[0]
