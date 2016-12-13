@@ -75,7 +75,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         
         let ac = UIAlertController(title: "Add name or delete?", message: "Would add a name to photo or delete it?", preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "add name", style: .default) {
-            [unowned self] _ in
+            [unowned self, person] _ in
             self.alertRenameImage(person: person)
         })
         ac.addAction(UIAlertAction(title: "delete person", style: .destructive) {
@@ -91,7 +91,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         ac.addTextField()
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         ac.addAction(UIAlertAction(title: "Ok", style: .default) {
-            [unowned self, ac] _ in
+            [unowned self, ac, person] _ in
             if let enteredName = ac.textFields![0].text, enteredName != "" {
                 person.name = enteredName
                 self.collectionView?.reloadData()
@@ -111,6 +111,37 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         let picker = UIImagePickerController()
         picker.allowsEditing = true
         picker.delegate = self
+        
+         if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
+        
+            let ac = UIAlertController(title: "Choose image...", message: nil, preferredStyle: .actionSheet)
+            
+            
+            ac.addAction(UIAlertAction(title: "From photo library", style: .default) {
+                [unowned self, picker] _ in
+                self.chooseFromLibrary(picker: picker)
+            })
+            
+            ac.addAction(UIAlertAction(title: "From camera", style: .default) {
+                [unowned self, picker] _ in
+                self.chooseFromCamera(picker: picker)
+            })
+            
+            present(ac, animated: true)
+         } else {
+             present(picker, animated: true)
+        }
+        
+
+    }
+    
+    func chooseFromLibrary(picker: UIImagePickerController) {
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true)
+    }
+    
+    func chooseFromCamera(picker: UIImagePickerController) {
+        picker.sourceType = .camera
         present(picker, animated: true)
     }
 
