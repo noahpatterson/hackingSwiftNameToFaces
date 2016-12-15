@@ -16,6 +16,11 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewPerson))
+
+        let defaults = UserDefaults.standard
+        if let savedData = defaults.object(forKey: "people") as? Data {
+            people = NSKeyedUnarchiver.unarchiveObject(with: savedData) as! [Person]
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -68,6 +73,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         collectionView?.reloadData()
         
         dismiss(animated: true)
+        save()
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -82,6 +88,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
             [unowned self] _ in
             self.people.remove(at: indexPath.item)
             self.collectionView?.reloadData()
+            self.save()
         })
         present(ac, animated: true)
     }
@@ -95,6 +102,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
             if let enteredName = ac.textFields![0].text, enteredName != "" {
                 person.name = enteredName
                 self.collectionView?.reloadData()
+                self.save()
             }
         })
         
@@ -129,7 +137,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
             
             present(ac, animated: true)
          } else {
-             present(picker, animated: true)
+            present(picker, animated: true)
         }
         
 
@@ -143,6 +151,12 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
     func chooseFromCamera(picker: UIImagePickerController) {
         picker.sourceType = .camera
         present(picker, animated: true)
+    }
+    
+    func save() {
+        let savedData = NSKeyedArchiver.archivedData(withRootObject: people)
+        let defaults  = UserDefaults.standard
+        defaults.set(savedData, forKey: "people")
     }
 
 
